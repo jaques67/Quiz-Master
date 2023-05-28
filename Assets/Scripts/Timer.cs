@@ -7,8 +7,9 @@ public class Timer : MonoBehaviour
     [SerializeField] float timeToCompleteQuestion = 30f;
     [SerializeField] float timeToShowCorrectAnswer = 10f;
 
+    // TODO: change from variables to getters/setters
     public bool loadNextQuestion;
-    public bool isAnsweringQuestion = false;
+    public bool isAnsweringQuestion;
     public float fillFraction;
 
     float timerValue;
@@ -28,6 +29,7 @@ public class Timer : MonoBehaviour
         timerValue -= Time.deltaTime;
 
         // changed to be same as tutorial
+        // TODO: Refactor code
         if (isAnsweringQuestion)
         {
             if (timerValue > 0)
