@@ -16,7 +16,7 @@ public class Quiz : MonoBehaviour
     [Header("Answers")]
     [SerializeField] GameObject[] answerButtons;
     int correctAnswerIndex;
-    bool hasAnsweredEarly;
+    bool hasAnsweredEarly = true;
 
     [Header("Button Colours")]
     [SerializeField] Sprite defaultAnswerSprite;
@@ -35,10 +35,14 @@ public class Quiz : MonoBehaviour
 
     public bool isComplete;
 
-    void Start()
+    private void Awake()
     {
         timer = FindObjectOfType<Timer>();
         scoreKeeper = FindObjectOfType<ScoreKeeper>();
+    }
+
+    void Start()
+    {
         progressBar.maxValue = questions.Count;
         progressBar.value = 0;
     }
@@ -48,6 +52,12 @@ public class Quiz : MonoBehaviour
         timerImage.fillAmount = timer.fillFraction;
         if (timer.loadNextQuestion)
         {
+            if (progressBar.value == progressBar.maxValue)
+            {
+                isComplete = true;
+                return;
+            }
+
             hasAnsweredEarly = false;
             GetNextQuestion();
             timer.loadNextQuestion = false;
@@ -68,18 +78,13 @@ public class Quiz : MonoBehaviour
         timer.CancelTimer();
         scoreText.text = $"Score: { scoreKeeper.CalculateScore() }%";
 
-        if (progressBar.value == progressBar.maxValue)
-        {
-            isComplete = true;
-        }
     }
 
     void DisplayAnswer(int index)
     {
-        correctAnswerIndex = currentQuestion.GetCorrectAnswerIndex();
         Image buttonImage;
 
-        if (index == correctAnswerIndex)
+        if (index == currentQuestion.GetCorrectAnswerIndex())
         {
             questionText.text = "Correct";
             buttonImage = answerButtons[index].GetComponent<Image>();
@@ -88,6 +93,7 @@ public class Quiz : MonoBehaviour
         }
         else
         {
+            correctAnswerIndex = currentQuestion.GetCorrectAnswerIndex();
             questionText.text = $"Sorry, the correct answer was:\n{currentQuestion.GetAnswer(correctAnswerIndex)}";
             buttonImage = answerButtons[correctAnswerIndex].GetComponent<Image>();
             buttonImage.sprite = correctAnswerSprite;
